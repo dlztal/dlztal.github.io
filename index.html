@@ -1,27 +1,108 @@
-<script type="text/javascript">
-var log = function (msg) {
-    $('body').append('<div class="log">' + msg + '</div>');
-};
- 
-var timeCheck;
- 
-function testApp(){
-    var $ifr = $('<iframe id="ifr"></iframe>')
-    $ifr.attr('src', 'checkApp.html');
-    $('body').append($ifr);
- 
-    timeCheck = setTimeout(function(){
-        log('timeout, 未安装');
-    }, 3000);
-}
- 
-function checkApp(state){
-    if( state == true ){
-        clearTimeout(timeCheck);
-        return;
-    } else {
-        log('checkApp, 未安装');
-    }
-}
-</script>
-<button onclick="testApp();">Test</button>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name='apple-itunes-app' content='app-id=1208046009' aria-hidden="true" hidden="true">
+    <title>Open App</title>
+</head>
+<body>
+    <h3>手机判断并安装某App</h3>
+    <div id="app">
+        <a v-show="android" href="qingke://" id="btnopenandroid">立即打开{{ title }}</a>
+        <a v-show="ios" href="qingke://" id="btnopenios">立即打开{{ title }}</a>
+    </div>
+    <script src="/bower_components/vue/dist/vue.min.js"></script>
+    <script>
+        var os = function () {
+            var ua = navigator.userAgent,
+                    isWeixin = /(?:micromessenger)/.test(ua.toLowerCase()),
+                    isQB = /(?:MQQBrowser|QQ)/.test(ua),
+                    isWindowsPhone = /(?:Windows Phone)/.test(ua),
+                    isSymbian = /(?:SymbianOS)/.test(ua) || isWindowsPhone,
+                    isAndroid = /(?:Android)/.test(ua),
+                    isFireFox = /(?:Firefox)/.test(ua),
+                    isChrome = /(?:Chrome|CriOS)/.test(ua),
+                    isIpad = /(?:iPad|PlayBook)/.test(ua),
+                    isTablet = /(?:iPad|PlayBook)/.test(ua) || (isFireFox && /(?:Tablet)/.test(ua)),
+                    isSafari = /(?:Safari)/.test(ua),
+                    isIPhone = /(?:iPhone)/.test(ua) && !isTablet,
+                    isOpen = /(?:Opera Mini)/.test(ua),
+                    isUC = /(?:UCWEB|UCBrowser)/.test(ua),
+                    isPc = !isIPhone && !isAndroid && !isSymbian;
+            return {
+                isWeixin: isWeixin,
+                isQB: isQB,
+                isTablet: isTablet,
+                isIPhone: isIPhone,
+                isAndroid: isAndroid,
+                isPc: isPc,
+                isOpen: isOpen,
+                isUC: isUC,
+                isIpad: isIpad
+            };
+        }();
+
+        new Vue({
+            el:'#app',
+            data:{
+                appurl:'',
+                appstore:'',
+                title:'',
+                android:false,
+                ios:false
+            },
+            created () {
+                var _self = this;
+                if(os.isAndroid){ 
+                    console.log(1)
+                    _self.title = 'android';
+                    _self.android = true;
+                    _self.appurl = 'qingke://';
+                    _self.appstore = 'https://a.app.qq.com/o/simple.jsp?pkgname=com.tongxue.tiku';
+                }
+                if(os.isIPhone || os.isIpad){
+                    console.log(2)
+                    _self.title = 'ios';
+                    _self.ios = true;
+                    _self.appurl = 'qingke://';
+                    _self.appstore = 'https://itunes.apple.com/us/app/yiqishuati/id1208046009?l=zh&ls=1&mt=8';
+                }
+            },
+            methods:{
+                openapp(){
+                    var _self = this;
+                    var clickedAt = new Date();    
+                    setTimeout(function(){  
+                        if (new Date() - clickedAt < 2000){ 
+                            window.location = _self.appstore;  
+                        }  
+                    }, 500);   
+                }
+            }    
+        })
+
+　　　　 var appstore = '';
+　　　　 // 为 a标签 绑定事件，如果在500ms内，没有解析到协议，那么就会跳转到下载链接 
+        if(os.isAndroid){ 
+            appstore = 'https://a.app.qq.com/o/simple.jsp?pkgname=com.tongxue.tiku';
+        }
+        if(os.isIPhone || os.isIpad){
+            appstore = "https://itunes.apple.com/us/app/yiqishuati/id1208046009?l=zh&ls=1&mt=8"; 
+        }
+        function applink(fail){              
+            return function(){  
+                var clickedAt = new Date();  
+                setTimeout(function(){  
+                    if (((new Date()) - clickedAt) < 2000){ 
+                        window.location = fail;  
+                    }  
+                }, 500);      
+            };  
+        }  
+        document.getElementById('btnopenios').onclick = applink(appstore);
+        document.getElementById('btnopenandroid').onclick = applink(appstore);
+    </script>
+</body>
+</html>
