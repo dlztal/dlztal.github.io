@@ -1,12 +1,64 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta http-equiv="Content-Language" content="zh-CN">
-    <meta HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=gb2312">
-    <meta http-equiv="refresh" content="0.1;url=qingke://com.txapp">
-    <title>轻课短信测试</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>学而思轻课</title>
+<style>
+    body { margin: 0; padding: 0;   font-family: 'Microsoft Yahei'; color: #208d11; background: #208d11; }
+    header { background: #FFF; padding: 2.8em 0; width:100%; text-align: center;color: #208d11;}
+    h1 {margin: 0;font-size: 3em;}
+    button { outline: none; }
+    .btn-group {position: fixed; left: 0; bottom: 4em; width: 100%; text-align: center;}
+    .btn {display: inline-block;border-radius: 2em;border: 2px solid #FFF; background:none;padding: .5em 2em; font-size: 1.5em; opacity: .8; color: #FFF;}
+    .btn:hover {opacity: 1;}
+</style>
 </head>
 <body>
-    <a href="qingke://com.txapp">启动程序</a>
+<header>
+    <h1>学而思轻课</h1>
+    <!-- <p>App introduction or brief explanation</p> -->
+</header>
+
+<div class="btn-group">
+    <!-- <button class="btn app-open">在App内打开</button> -->
+    <button class="btn app-down" id="downloadBtn">Download</button>
+</div>
+
+<!--引入app-download-boot.js文件-->
+<script src="./dist/app-download-boot.js"></script>
+<!--<script src="../dist/app-download-boot.min.js"></script>-->
+<script>
+    var appDownload = new appDownloadBoot({
+        android: {
+            // 直接下载的文件地址
+            file: 'https://cdn2.txbimg.com/app/version/2020/tongxue/tx_qingke_7.0.1.apk',
+            schema: 'qingke://',
+            yyb: 'https://a.app.qq.com/o/simple.jsp?pkgname=com.tongxue.tiku'
+        },
+        ios: {
+            appid: "1110650922",
+            // appStore
+            appstore: 'https://itunes.apple.com/us/app/yiqishuati/id1208046009?l=zh&ls=1&mt=8',
+            schema: 'qingke://'
+        },
+        // app下载介绍页面或官网
+        site: 'https://www.xueersi.cn/',
+        // 需要在App内打开的内容链接(app已安装时，启动App并加载此页面)
+        url: '',
+        // 消息回调
+        callback: function (res) {
+            console.log(res.code, res.msg)
+            if (res.code === 3 || res.code === 4) {
+                alert(res.msg)
+            }
+        }
+    });
+
+    document.getElementById('downloadBtn').onclick = function () {
+        appDownload.download();
+    };
+
+</script>
 </body>
 </html>
